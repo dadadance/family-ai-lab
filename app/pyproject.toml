@@ -1,0 +1,16 @@
+[project]
+name = "family-ai-lab"
+version = "0.1.0"
+description = "Local AI Learning Platform"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.32.0",
+    "chromadb>=0.4.24",
+    "requests>=2.31.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "matplotlib>=3.8.0",
+    "plotly>=5.19.0",
+    "scikit-learn>=1.4.0",
+    "watchdog>=4.0.0"
+]

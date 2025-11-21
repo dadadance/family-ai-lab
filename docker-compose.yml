@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: lab_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_storage:/root/.ollama
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: lab_chroma
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+    volumes:
+      - chroma_storage:/chroma/chroma
+
+  lab-ui:
+    build: ./app
+    container_name: lab_ui
+    ports:
+      - "8501:8501"
+    depends_on:
+      - ollama
+      - chroma
+    environment:
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+      - OLLAMA_URL=http://ollama:11434
+    volumes:
+      - ./app:/app
+
+volumes:
+  ollama_storage:
+  chroma_storage:

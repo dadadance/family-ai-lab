@@ -1,0 +1,24 @@
+# Use a slim Python base
+FROM python:3.11-slim
+
+# 1. Install UV (The fast package manager)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+WORKDIR /app
+
+# 2. Copy project definition
+COPY pyproject.toml .
+
+# 3. Install dependencies using UV
+# We compile to requirements.txt on the fly and install to system python
+RUN uv pip compile pyproject.toml -o requirements.txt && \
+    uv pip install --system -r requirements.txt
+
+# 4. Expose Streamlit port
+EXPOSE 8501
+
+# 5. Healthcheck
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+
+# 6. Run the app
+CMD ["streamlit", "run", "Home.py", "--server.address=0.0.0.0"]
