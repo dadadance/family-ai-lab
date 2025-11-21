@@ -2,12 +2,17 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import utils_lms
+import os
 
-st.set_page_config(page_title="Sprint 1: Math", page_icon="📐")
+st.set_page_config(page_title="M1: The Dot Product", page_icon="📐")
 user = utils_lms.get_current_user()
 if not user:
     st.warning("🔒 Please login on the Home page to access this lesson.")
     st.stop()
+
+# Derive lesson_id from filename
+lesson_id = os.path.splitext(os.path.basename(__file__))[0].lower().replace('_', '-')
+
 
 st.title("📐 Sprint 1: The Dot Product")
 st.markdown("""
@@ -50,10 +55,17 @@ else: st.warning("Orthogonal / Unrelated")
 
 st.divider()
 st.subheader("3. Knowledge Check")
-st.write("Set Vector A to `[0, 5]` and Vector B to `[5, 0]`. What is the Dot Product?")
-answer = st.radio("Select result:", ["25", "10", "0", "-5"])
-if st.button("Submit Assignment"):
-    if answer == "0":
-        utils_lms.mark_complete("sprint_1_vectors", xp_reward=150)
-    else:
-        st.error("Incorrect.")
+data = utils_lms.load_data()
+
+if lesson_id in data[user]["completed"]:
+    st.info("You have already completed this lesson and earned 150 XP.")
+    st.page_link("pages/1_Module_1_Foundations/02_🧬_Embeddings.py", label="Next Lesson: Embeddings", icon="🧬")
+else:
+    st.write("Set Vector A to `[0, 5]` and Vector B to `[5, 0]`. What is the Dot Product?")
+    answer = st.radio("Select result:", ["25", "10", "0", "-5"])
+    if st.button("Submit Assignment"):
+        if answer == "0":
+            utils_lms.mark_complete(lesson_id, xp_reward=150)
+            st.page_link("pages/1_Module_1_Foundations/02_🧬_Embeddings.py", label="Next Lesson: Embeddings", icon="🧬")
+        else:
+            st.error("Incorrect.")

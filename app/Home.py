@@ -37,7 +37,7 @@ if user:
     st.subheader(f"Welcome back, {user}!")
     m1, m2, m3 = st.columns(3)
     m1.metric("Total XP", data[user]["xp"])
-    m2.metric("Modules Finished", len(data[user]["completed"]))
+    m2.metric("Lessons Finished", len(data[user]["completed"]))
     xp = data[user]["xp"]
     rank = "🌱 Novice"
     if xp >= 500: rank = "🛠️ Apprentice"
@@ -45,15 +45,38 @@ if user:
     if xp >= 5000: rank = "🧙‍♂️ Guru"
     m3.metric("Current Rank", rank)
     st.divider()
-    st.write("### 🏆 Household Leaderboard")
-    df = pd.DataFrame.from_dict(data, orient='index')
-    df['user'] = df.index
-    st.bar_chart(df, x='user', y='xp', color='#FF4B4B')
+    st.header("🗺️ Your Roadmap")
+    
+    # Get modules by listing directories in the 'pages' folder
+    pages_dir = "pages"
+    modules = sorted([d for d in os.listdir(pages_dir) if os.path.isdir(os.path.join(pages_dir, d))])
+    
+    for module_name in modules:
+        with st.expander(f"**{module_name.replace('_', ' ')}**", expanded=True):
+            module_path = os.path.join(pages_dir, module_name)
+            lessons = sorted([f for f in os.listdir(module_path) if f.endswith(".py")])
+            
+            for lesson_file in lessons:
+                lesson_path = os.path.join(module_path, lesson_file)
+                lesson_name = os.path.splitext(lesson_file)[0][3:].replace('_', ' ')
+                # Create a unique lesson_id from the filename
+                lesson_id = os.path.splitext(lesson_file)[0].lower().replace('_', '-')
+
+                col1, col2 = st.columns([4, 1])
+                with col1:
+                    if lesson_id in data[user]["completed"]:
+                        st.markdown(f"✅ ~~_{lesson_name}_~~")
+                    else:
+                        st.markdown(f"◻️ {lesson_name}")
+                with col2:
+                    st.page_link(lesson_path, label="Start", icon="▶️")
+
 else:
     st.info("👈 Please login via the sidebar to track your progress.")
+    st.image("https://storage.googleapis.com/gemini-agile-prod-storage/project_replit/meme.png")
     st.markdown("""
-    ### 🗺️ The Roadmap
-    **Sprint 1: The Foundations**
-    - [x] Environment Setup
-    - [ ] Vectors & Dot Products (See Page 1)
+    ### 🚀 AI Engineer - Zero to Hero!
+    This course is designed to take you from the very basics of programming to deploying and managing complex AI systems.
+    
+    **Login to start your journey!**
     """)
